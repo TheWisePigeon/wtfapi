@@ -1,5 +1,4 @@
 "use strict";
-//92423146
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -36,49 +35,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv = __importStar(require("dotenv"));
-dotenv.config();
-const config_1 = require("./config");
-const utils_1 = require("./utils");
-const body_parser_1 = __importDefault(require("body-parser"));
-const cors_1 = __importDefault(require("cors"));
-const models_1 = require("./models");
-const PORT = process.env.PORT || 3000;
-const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(body_parser_1.default.json());
-app.get('/', (_req, res) => {
-    return res.send('Sup nigguh');
+exports.authAndDecrypt = exports.createSignedToken = exports.encryptPassword = void 0;
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const jwt = __importStar(require("jsonwebtoken"));
+const salt = "bruh";
+const secretKey = "bruh";
+const encryptPassword = (plainTextPassword) => {
+    return bcrypt_1.default.hashSync(plainTextPassword, salt);
+};
+exports.encryptPassword = encryptPassword;
+const passwordMatch = (plainTextPassword, hashedPassword) => __awaiter(void 0, void 0, void 0, function* () {
 });
-app.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password } = req.body;
-    const token = yield (0, utils_1.createSignedToken)(req.body);
-    if (!token) {
-        return res.status(500).send({
-            "message": "Something went wrong"
-        });
+const createSignedToken = (userInfo) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return jwt.sign(userInfo, secretKey);
     }
-    const newUser = new models_1.Usermodel({ username, email, password: (0, utils_1.encryptPassword)(password) });
-    newUser.save((err, result) => {
-        if (err) {
-            console.log(`Something went wrong ${err.message} `);
-            res.status(500).send({
-                "message": "Something went wrong"
-            });
-        }
-        return res.status(200).send({
-            "token": token
-        });
-    });
-}));
-app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password } = req.body;
-    if (username) {
-        return;
+    catch (error) {
+        console.log("Something went wrong");
+        return false;
     }
-}));
-app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, config_1.connectToDB)();
-    console.log("App listening on http://localhost:3000");
-}));
+});
+exports.createSignedToken = createSignedToken;
+const authAndDecrypt = (req) => {
+    const authHeader = req.headers.authorization.split(" ")[1];
+};
+exports.authAndDecrypt = authAndDecrypt;
